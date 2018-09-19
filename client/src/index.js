@@ -2,7 +2,6 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
-import registerServiceWorker from "./registerServiceWorker";
 
 // import drizzle functions and contract artifact
 import { Drizzle, generateStore } from "drizzle";
@@ -17,4 +16,3 @@ const drizzle = new Drizzle(options, drizzleStore);
 
 // pass in the drizzle instance
 ReactDOM.render(<App drizzle={drizzle} />, document.getElementById("root"));
-registerServiceWorker();
