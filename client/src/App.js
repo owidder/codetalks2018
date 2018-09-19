@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
-import {ReadEntries} from './ReadEntries';
-import  {StoreHash} from './StoreHash';
+import  {HashStore} from './HashStore';
 
 import './App.css';
 
@@ -32,11 +31,7 @@ class App extends Component {
         if (this.state.loading) return "Loading Drizzle...";
         return (
             <div className="App">
-                <ReadEntries
-                    drizzle={this.props.drizzle}
-                    drizzleState={this.state.drizzleState}
-                />
-                <StoreHash
+                <HashStore
                     drizzle={this.props.drizzle}
                     drizzleState={this.state.drizzleState}
                 />

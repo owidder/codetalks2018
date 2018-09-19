@@ -1,6 +1,6 @@
 import React from "react";
 
-export class StoreHash extends React.Component {
+export class HashStore extends React.Component {
     state = { stackId: null };
 
     handleKeyDown = e => {
@@ -36,6 +36,13 @@ export class StoreHash extends React.Component {
         // otherwise, return the transaction status
         return `Transaction status: ${transactions[txHash].status}`;
     };
+
+    componentDidMount() {
+        const { drizzle } = this.props;
+        drizzle.contracts.HashStore.events
+            .NewHashEntry({fromBlock: 0, toBlock: 'latest'})
+            .on('data', (event) => console.log(event));
+    }
 
     render() {
         return (
