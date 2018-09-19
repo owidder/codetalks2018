@@ -1,6 +1,6 @@
 import React from "react";
 
-export class SetString extends React.Component {
+export class StoreHash extends React.Component {
     state = { stackId: null };
 
     handleKeyDown = e => {
@@ -12,10 +12,10 @@ export class SetString extends React.Component {
 
     setValue = value => {
         const { drizzle, drizzleState } = this.props;
-        const contract = drizzle.contracts.MyStringStore;
+        const contract = drizzle.contracts.HashStore;
 
         // let drizzle know we want to call the `set` method with `value`
-        const stackId = contract.methods["set"].cacheSend(value, {
+        const stackId = contract.methods["addHashEntry"].cacheSend(value, {
             from: drizzleState.accounts[0]
         });
 

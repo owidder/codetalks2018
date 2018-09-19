@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
-import {ReadString} from './ReadString';
-import  {SetString} from './SetString';
+import {ReadEntries} from './ReadEntries';
+import  {StoreHash} from './StoreHash';
 
 import './App.css';
 
@@ -32,11 +32,11 @@ class App extends Component {
         if (this.state.loading) return "Loading Drizzle...";
         return (
             <div className="App">
-                <ReadString
+                <ReadEntries
                     drizzle={this.props.drizzle}
                     drizzleState={this.state.drizzleState}
                 />
-                <SetString
+                <StoreHash
                     drizzle={this.props.drizzle}
                     drizzleState={this.state.drizzleState}
                 />
