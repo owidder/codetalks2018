@@ -1,7 +1,11 @@
 import React from "react";
 import {Form, Input, Button, Row, Col} from 'antd';
+import 'antd/dist/antd.css';
 
-export class HashStore extends React.Component {
+const FormItem = Form.Item;
+const {TextArea} = Input;
+
+export class _HashStore extends React.Component {
     state = { stackId: null };
 
     handleKeyDown = e => {
@@ -46,11 +50,39 @@ export class HashStore extends React.Component {
     }
 
     render() {
+        const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched } = this.props.form;
+
         return (
             <div>
-                <input type="text" onKeyDown={this.handleKeyDown} />
-                <div>{this.getTxStatus()}</div>
+                <Form>
+                    <Row>
+                        <Col span={1}/>
+                        <Col span={22}>
+                            <FormItem label="text to claim">
+                                {getFieldDecorator('textToClaim', {
+                                    rules: [{
+                                        required: true,
+                                        message: 'Input text to claim',
+                                    }],
+                                })(
+                                    <TextArea placeholder="text to claim" autosize/>
+                                )}
+                            </FormItem>
+                        </Col>
+                        <Col span={1}/>
+                    </Row>
+                    <Row>
+                        <Col span={1}/>
+                        <Col span={22}>
+                            <Button type="primary" onClick={(e) => this.setValue(e)}>Check</Button>
+                        </Col>
+                        <Col span={1}/>
+                    </Row>
+                </Form>
+                <p>{this.getTxStatus()}</p>
             </div>
-        );
+        )
     }
 }
+
+export const HashStore = Form.create()(_HashStore);
