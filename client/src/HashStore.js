@@ -15,7 +15,7 @@ export class _HashStore extends React.Component {
         evt.preventDefault();
         this.props.form.validateFields(async (err, values) => {
             if (!err) {
-                const { drizzle, drizzleState } = this.props;
+                const {drizzle, drizzleState} = this.props;
                 const contract = drizzle.contracts.TextStore;
 
                 const hashedText = await hashSHA512FromUtf8(values.text);
@@ -30,7 +30,7 @@ export class _HashStore extends React.Component {
     };
 
     getTxStatus() {
-        const { transactions, transactionStack } = this.props.drizzleState;
+        const {transactions, transactionStack} = this.props.drizzleState;
         const txHash = transactionStack[this.state.stackId];
 
         if (!txHash) return null;
@@ -46,20 +46,14 @@ export class _HashStore extends React.Component {
     }
 
     render() {
-        const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched } = this.props.form;
+        const {getFieldDecorator} = this.props.form;
 
         return (
             <div className="hashstore">
                 <Form>
                     <FormItem label="Some text">
-                        {getFieldDecorator('text', {
-                            rules: [{
-                                required: true,
-                                message: 'Input some text',
-                            }],
-                        })(
-                            <TextArea placeholder="Some text" autosize/>
-                        )}
+                        {getFieldDecorator('text', {rules: [{required: true, message: 'Input some text',}],
+                        })(<TextArea placeholder="Some text" autosize/>)}
                     </FormItem>
                 </Form>
                 <Card>
