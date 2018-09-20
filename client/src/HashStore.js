@@ -1,6 +1,7 @@
 import React from "react";
-import {Form, Input, Button, Row, Col} from 'antd';
+import {Form, Input, Button, Row, Col, Card} from 'antd';
 import 'antd/dist/antd.css';
+import './HashStore.css';
 
 import {hashSHA512FromUtf8} from './hash';
 
@@ -8,7 +9,7 @@ const FormItem = Form.Item;
 const {TextArea} = Input;
 
 export class _HashStore extends React.Component {
-    state = { stackId: null };
+    state = {stackId: null, hashedText: null};
 
     storeHashedText(evt) {
         evt.preventDefault();
@@ -23,7 +24,7 @@ export class _HashStore extends React.Component {
                     from: drizzleState.accounts[0]
                 });
 
-                this.setState({ stackId });
+                this.setState({stackId, hashedText});
             }
         })
     };
@@ -48,33 +49,24 @@ export class _HashStore extends React.Component {
         const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched } = this.props.form;
 
         return (
-            <div>
+            <div className="hashstore">
                 <Form>
-                    <Row>
-                        <Col span={1}/>
-                        <Col span={22}>
-                            <FormItem label="Some text">
-                                {getFieldDecorator('text', {
-                                    rules: [{
-                                        required: true,
-                                        message: 'Input some text',
-                                    }],
-                                })(
-                                    <TextArea placeholder="Some text" autosize/>
-                                )}
-                            </FormItem>
-                        </Col>
-                        <Col span={1}/>
-                    </Row>
-                    <Row>
-                        <Col span={1}/>
-                        <Col span={22}>
-                            <Button type="primary" onClick={(e) => this.storeHashedText(e)}>Store hash</Button>
-                        </Col>
-                        <Col span={1}/>
-                    </Row>
+                    <FormItem label="Some text">
+                        {getFieldDecorator('text', {
+                            rules: [{
+                                required: true,
+                                message: 'Input some text',
+                            }],
+                        })(
+                            <TextArea placeholder="Some text" autosize/>
+                        )}
+                    </FormItem>
                 </Form>
-                <p>{this.getTxStatus()}</p>
+                <Card>
+                    <p><Button type="primary" onClick={(e) => this.storeHashedText(e)}>Store hash</Button></p>
+                    <p>{this.state.hashedText}</p>
+                    <p>{this.getTxStatus()}</p>
+                </Card>
             </div>
         )
     }
