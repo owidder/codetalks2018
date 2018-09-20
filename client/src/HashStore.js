@@ -2,43 +2,38 @@ import React from "react";
 import {Form, Input, Button, Row, Col} from 'antd';
 import 'antd/dist/antd.css';
 
+import {hashSHA512FromUtf8} from './hash';
+
 const FormItem = Form.Item;
 const {TextArea} = Input;
 
 export class _HashStore extends React.Component {
     state = { stackId: null };
 
-    handleKeyDown = e => {
-        // if the enter key is pressed, set the value with the string
-        if (e.keyCode === 13) {
-            this.setValue(e.target.value);
-        }
+    storeHashedText(evt) {
+        evt.preventDefault();
+        this.props.form.validateFields(async (err, values) => {
+            if (!err) {
+                const { drizzle, drizzleState } = this.props;
+                const contract = drizzle.contracts.HashStore;
+
+                const hashedText = await hashSHA512FromUtf8(values.text);
+
+                const stackId = contract.methods["addHashEntry"].cacheSend(hashedText, {
+                    from: drizzleState.accounts[0]
+                });
+
+                this.setState({ stackId });
+            }
+        })
     };
 
-    setValue = value => {
-        const { drizzle, drizzleState } = this.props;
-        const contract = drizzle.contracts.HashStore;
-
-        // let drizzle know we want to call the `set` method with `value`
-        const stackId = contract.methods["addHashEntry"].cacheSend(value, {
-            from: drizzleState.accounts[0]
-        });
-
-        // save the `stackId` for later reference
-        this.setState({ stackId });
-    };
-
-    getTxStatus = () => {
-        // get the transaction states from the drizzle state
+    getTxStatus() {
         const { transactions, transactionStack } = this.props.drizzleState;
-
-        // get the transaction hash using our saved `stackId`
         const txHash = transactionStack[this.state.stackId];
 
-        // if transaction hash does not exist, don't display anything
         if (!txHash) return null;
 
-        // otherwise, return the transaction status
         return `Transaction status: ${transactions[txHash].status}`;
     };
 
@@ -58,14 +53,14 @@ export class _HashStore extends React.Component {
                     <Row>
                         <Col span={1}/>
                         <Col span={22}>
-                            <FormItem label="text to claim">
-                                {getFieldDecorator('textToClaim', {
+                            <FormItem label="Some text">
+                                {getFieldDecorator('text', {
                                     rules: [{
                                         required: true,
-                                        message: 'Input text to claim',
+                                        message: 'Input some text',
                                     }],
                                 })(
-                                    <TextArea placeholder="text to claim" autosize/>
+                                    <TextArea placeholder="Some text" autosize/>
                                 )}
                             </FormItem>
                         </Col>
@@ -74,7 +69,7 @@ export class _HashStore extends React.Component {
                     <Row>
                         <Col span={1}/>
                         <Col span={22}>
-                            <Button type="primary" onClick={(e) => this.setValue(e)}>Check</Button>
+                            <Button type="primary" onClick={(e) => this.storeHashedText(e)}>Store hash</Button>
                         </Col>
                         <Col span={1}/>
                     </Row>
