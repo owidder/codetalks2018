@@ -16,11 +16,11 @@ export class _HashStore extends React.Component {
         this.props.form.validateFields(async (err, values) => {
             if (!err) {
                 const { drizzle, drizzleState } = this.props;
-                const contract = drizzle.contracts.HashStore;
+                const contract = drizzle.contracts.TextStore;
 
                 const hashedText = await hashSHA512FromUtf8(values.text);
 
-                const stackId = contract.methods["addHashEntry"].cacheSend(hashedText, {
+                const stackId = contract.methods["addTextEntry"].cacheSend(hashedText, {
                     from: drizzleState.accounts[0]
                 });
 
@@ -40,8 +40,8 @@ export class _HashStore extends React.Component {
 
     componentDidMount() {
         const { drizzle } = this.props;
-        drizzle.contracts.HashStore.events
-            .NewHashEntry({fromBlock: 0, toBlock: 'latest'})
+        drizzle.contracts.TextStore.events
+            .NewTextEntry({fromBlock: 0, toBlock: 'latest'})
             .on('data', (event) => console.log(event));
     }
 

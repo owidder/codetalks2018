@@ -5,10 +5,10 @@ import App from "./App";
 
 // import drizzle functions and contract artifact
 import { Drizzle, generateStore } from "drizzle";
-import HashStore from "./contracts/HashStore.json";
+import TextStore from "./contracts/TextStore.json";
 
 // let drizzle know what contracts we want
-const options = { contracts: [HashStore] };
+const options = { contracts: [TextStore] };
 
 // setup the drizzle store and drizzle
 const drizzleStore = generateStore(options);
