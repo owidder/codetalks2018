@@ -1,0 +1,23 @@
+{
+  "name": "codetalks2018",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/owidder/codetalks2018.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/owidder/codetalks2018/issues"
+  },
+  "homepage": "https://github.com/owidder/codetalks2018#readme",
+  "dependencies": {
+    "truffle-hdwallet-provider": "0.0.6"
+  }
+}
