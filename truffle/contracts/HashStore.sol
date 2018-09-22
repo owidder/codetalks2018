@@ -1,5 +1,4 @@
 pragma solidity ^0.4.24;
-pragma experimental ABIEncoderV2;
 
 contract HashStore {
 
@@ -17,7 +16,15 @@ contract HashStore {
         entries[hash] = entry;
     }
 
-    function getEntryFromHash(string hash) public view returns(Entry) {
-        return entries[hash];
+    function getSourceFromHash(string hash) public view returns(address) {
+        return entries[hash].source;
+    }
+
+    function getBlockNumberFromHash(string hash) public view returns(uint) {
+        return entries[hash].blockNumber;
+    }
+
+    function getBlockTimestampFromHash(string hash) public view returns(uint) {
+        return entries[hash].blockTimestamp;
     }
 }

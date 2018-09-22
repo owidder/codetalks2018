@@ -1,5 +1,5 @@
 import React from "react";
-import {Form, Input, Button, Row, Col, Card} from 'antd';
+import {Form, Input, Button, Card} from 'antd';
 import 'antd/dist/antd.css';
 import './HashStore.css';
 
@@ -9,7 +9,16 @@ const FormItem = Form.Item;
 const {TextArea} = Input;
 
 export class _HashStore extends React.Component {
-    state = {stackId: null, hashedText: null, dataKey: null};
+    constructor(props) {
+        super(props);
+        this.state = {
+            stackId: null,
+            hashedText: null,
+            sourceKey: null,
+            blockNumberKey: null,
+            blockTimestampKey: null,
+        };
+    }
 
     storeHashedText(evt) {
         evt.preventDefault();
@@ -37,9 +46,11 @@ export class _HashStore extends React.Component {
 
                 const hashedText = await hashSHA256FromUtf8(values.text);
 
-                const dataKey = contract.methods["getEntryFromHash"].cacheCall(hashedText);
+                const sourceKey = contract.methods["getSourceFromHash"].cacheCall(hashedText);
+                const blockNumberKey = contract.methods["getBlockNumberFromHash"].cacheCall(hashedText);
+                const blockTimestampKey = contract.methods["getBlockTimestampFromHash"].cacheCall(hashedText);
 
-                this.setState({dataKey, hashedText});
+                this.setState({sourceKey, blockNumberKey, blockTimestampKey, hashedText});
             }
         })
     }
@@ -53,13 +64,13 @@ export class _HashStore extends React.Component {
         return `Transaction status: ${transactions[txHash].status}`;
     };
 
-    renderEntry(entry) {
-        if(entry && entry.value) {
-            const date = new Date(Number(entry.value.blockTimestamp) * 1000);
+    renderEntry(source, blockNumber, blockTimestamp) {
+        if(source && blockNumber && blockTimestamp) {
+            const date = new Date(Number(blockTimestamp.value) * 1000);
             return <Card>
                 <p>{this.state.hashedText}</p>
-                <p>Source: {entry.value.source}</p>
-                <p>Block number: {entry.value.blockNumber}</p>
+                <p>Source: {source.value}</p>
+                <p>Block number: {blockNumber.value}</p>
                 <p>Block timestamp: {date.toDateString()}</p>
             </Card>
         }
@@ -69,7 +80,9 @@ export class _HashStore extends React.Component {
 
     render() {
         const contract = this.props.drizzleState.contracts.HashStore;
-        const entry = contract.getEntryFromHash[this.state.dataKey];
+        const source = contract.getSourceFromHash[this.state.sourceKey];
+        const blockNumber = contract.getBlockNumberFromHash[this.state.blockNumberKey];
+        const blockTimestamp = contract.getBlockTimestampFromHash[this.state.blockTimestampKey];
 
         return (
             <div className="hashstore">
@@ -84,7 +97,7 @@ export class _HashStore extends React.Component {
                     <p><Button type="primary" onClick={(e) => this.getEntryFromHash(e)}>Get entry</Button></p>
                     <p>{this.getTxStatus()}</p>
                 </Card>
-                {this.renderEntry(entry)}
+                {this.renderEntry(source, blockNumber, blockTimestamp)}
             </div>
         )
     }
