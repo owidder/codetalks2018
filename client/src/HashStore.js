@@ -38,7 +38,7 @@ export class _HashStore extends React.Component {
 
                 const hashedText = await hashSHA256FromUtf8(values.text);
 
-                const dataKey = contract.methods["getEntriesFromHash"].cacheCall();
+                const dataKey = contract.methods["getEntryFromHash"].cacheCall(hashedText);
 
                 this.setState({dataKey, hashedText});
             }
@@ -59,8 +59,8 @@ export class _HashStore extends React.Component {
         const contract = drizzleState.contracts.HashStore;
         const {getFieldDecorator} = this.props.form;
 
-        // const entries = contract.getEntriesFromHash[this.state.dataKey];
-        // console.log(entries);
+        const entries = contract.getEntryFromHash[this.state.dataKey];
+        console.log(entries);
 
         return (
             <div className="hashstore">
