@@ -29,7 +29,7 @@ export class _HashStore extends React.Component {
         })
     };
 
-    getEntriesFromHash(evt) {
+    getEntryFromHash(evt) {
         evt.preventDefault();
         this.props.form.validateFields(async (err, values) => {
             if (!err) {
@@ -54,28 +54,38 @@ export class _HashStore extends React.Component {
         return `Transaction status: ${transactions[txHash].status}`;
     };
 
-    render() {
-        const {drizzleState} = this.props;
-        const contract = drizzleState.contracts.HashStore;
-        const {getFieldDecorator} = this.props.form;
+    renderEntry(entry) {
+        if(entry && entry.value) {
+            const date = new Date(Number(entry.value.blockTimestamp) * 1000);
+            return <Card>
+                <p>{this.state.hashedText}</p>
+                <p>Source: {entry.value.source}</p>
+                <p>Block number: {entry.value.blockNumber}</p>
+                <p>Block timestamp: {date.toDateString()}</p>
+            </Card>
+        }
 
-        const entries = contract.getEntryFromHash[this.state.dataKey];
-        console.log(entries);
+        return <span></span>
+    }
+
+    render() {
+        const contract = this.props.drizzleState.contracts.HashStore;
+        const entry = contract.getEntryFromHash[this.state.dataKey];
 
         return (
             <div className="hashstore">
                 <Form>
                     <FormItem label="Some text">
-                        {getFieldDecorator('text', {rules: [{required: true, message: 'Input some text',}],
+                        {this.props.form.getFieldDecorator('text', {rules: [{required: true, message: 'Input some text',}],
                         })(<TextArea placeholder="Some text" autosize/>)}
                     </FormItem>
                 </Form>
                 <Card>
                     <p><Button type="primary" onClick={(e) => this.storeHashedText(e)}>Store hash</Button></p>
-                    <p><Button type="primary" onClick={(e) => this.getEntriesFromHash(e)}>Get entries</Button></p>
-                    <p>{this.state.hashedText}</p>
+                    <p><Button type="primary" onClick={(e) => this.getEntryFromHash(e)}>Get entry</Button></p>
                     <p>{this.getTxStatus()}</p>
                 </Card>
+                {this.renderEntry(entry)}
             </div>
         )
     }

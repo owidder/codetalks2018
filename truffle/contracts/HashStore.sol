@@ -9,8 +9,6 @@ contract HashStore {
         uint blockTimestamp;
     }
 
-    string public s = "s";
-    
     mapping (string => Entry) entries;
 
     function storeHash(string hash) public {
