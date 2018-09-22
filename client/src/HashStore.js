@@ -33,8 +33,7 @@ export class _HashStore extends React.Component {
         evt.preventDefault();
         this.props.form.validateFields(async (err, values) => {
             if (!err) {
-                const {drizzle, drizzleState} = this.props;
-                const contract = drizzle.contracts.HashStore;
+                const contract = this.props.drizzle.contracts.HashStore;
 
                 const hashedText = await hashSHA256FromUtf8(values.text);
 
