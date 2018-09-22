@@ -3,24 +3,24 @@ import {Form, Input, Button, Row, Col, Card} from 'antd';
 import 'antd/dist/antd.css';
 import './HashStore.css';
 
-import {hashSHA512FromUtf8} from './hash';
+import {hashSHA256FromUtf8} from './hash';
 
 const FormItem = Form.Item;
 const {TextArea} = Input;
 
 export class _HashStore extends React.Component {
-    state = {stackId: null, hashedText: null};
+    state = {stackId: null, hashedText: null, dataKey: null};
 
     storeHashedText(evt) {
         evt.preventDefault();
         this.props.form.validateFields(async (err, values) => {
             if (!err) {
                 const {drizzle, drizzleState} = this.props;
-                const contract = drizzle.contracts.TextStore;
+                const contract = drizzle.contracts.HashStore;
 
-                const hashedText = await hashSHA512FromUtf8(values.text);
+                const hashedText = await hashSHA256FromUtf8(values.text);
 
-                const stackId = contract.methods["addTextEntry"].cacheSend(hashedText, {
+                const stackId = contract.methods["storeHash"].cacheSend(hashedText, {
                     from: drizzleState.accounts[0]
                 });
 
@@ -28,6 +28,22 @@ export class _HashStore extends React.Component {
             }
         })
     };
+
+    getEntriesFromHash(evt) {
+        evt.preventDefault();
+        this.props.form.validateFields(async (err, values) => {
+            if (!err) {
+                const {drizzle, drizzleState} = this.props;
+                const contract = drizzle.contracts.HashStore;
+
+                const hashedText = await hashSHA256FromUtf8(values.text);
+
+                const dataKey = contract.methods["getEntriesFromHash"].cacheCall();
+
+                this.setState({dataKey, hashedText});
+            }
+        })
+    }
 
     getTxStatus() {
         const {transactions, transactionStack} = this.props.drizzleState;
@@ -38,15 +54,13 @@ export class _HashStore extends React.Component {
         return `Transaction status: ${transactions[txHash].status}`;
     };
 
-    componentDidMount() {
-        const { drizzle } = this.props;
-        drizzle.contracts.TextStore.events
-            .NewTextEntry({fromBlock: 0, toBlock: 'latest'})
-            .on('data', (event) => console.log(event));
-    }
-
     render() {
+        const {drizzleState} = this.props;
+        const contract = drizzleState.contracts.HashStore;
         const {getFieldDecorator} = this.props.form;
+
+        // const entries = contract.getEntriesFromHash[this.state.dataKey];
+        // console.log(entries);
 
         return (
             <div className="hashstore">
@@ -58,6 +72,7 @@ export class _HashStore extends React.Component {
                 </Form>
                 <Card>
                     <p><Button type="primary" onClick={(e) => this.storeHashedText(e)}>Store hash</Button></p>
+                    <p><Button type="primary" onClick={(e) => this.getEntriesFromHash(e)}>Get entries</Button></p>
                     <p>{this.state.hashedText}</p>
                     <p>{this.getTxStatus()}</p>
                 </Card>

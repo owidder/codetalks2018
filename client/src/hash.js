@@ -17,11 +17,11 @@ function hex(buffer) {
     return hexCodes.join("");
 }
 
-export const hashSHA512FromUtf8 = (utf8Text) => {
+export const hashSHA256FromUtf8 = (utf8Text) => {
 
     return new Promise((resolve) => {
         const buffer = new TextEncoder("utf-8").encode(utf8Text);
-        crypto.subtle.digest("SHA-512", buffer).then((hash) => {
+        crypto.subtle.digest("SHA-256", buffer).then((hash) => {
             resolve(hex(hash));
         }, (e) => {
             console.log(e);
