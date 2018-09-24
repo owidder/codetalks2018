@@ -35,27 +35,22 @@ export class _HashStore extends React.Component {
         this.unsubscribe();
     }
 
-    storeHashedText(evt) {
-        evt.preventDefault();
-        this.props.form.validateFields(async (err, values) => {
-            if (!err) {
-                const {drizzleState} = this.state;
-                const contract = this.drizzle.contracts.HashStore;
+    async storeHashedText(evt) {
+        const {drizzleState} = this.state;
+        const contract = this.drizzle.contracts.HashStore;
 
-                const hashedText = await hashSHA256FromUtf8(values.text);
+        const text = this.textArea.props.value;
+        const hashedText = await hashSHA256FromUtf8(text);
 
-                const stackId = contract.methods["storeHash"].cacheSend(hashedText, {
-                    from: drizzleState.accounts[0]
-                });
+        const stackId = contract.methods["storeHash"].cacheSend(hashedText, {
+            from: drizzleState.accounts[0]
+        });
 
-                this.setState({stackId, hashedText});
-            }
-        })
+        this.setState({stackId, hashedText});
+
     };
 
-    async getEntryFromHash(evt) {
-        evt.preventDefault();
-
+    async getEntryFromHash() {
         const contract = this.drizzle.contracts.HashStore;
 
         const text = this.textArea.props.value;
@@ -111,8 +106,8 @@ export class _HashStore extends React.Component {
                     </FormItem>
                 </Form>
                 <Card>
-                    <p><Button type="primary" onClick={(e) => this.storeHashedText(e)}>Store hash</Button></p>
-                    <p><Button type="primary" onClick={(e) => this.getEntryFromHash(e)}>Get entry</Button></p>
+                    <p><Button type="primary" onClick={() => this.storeHashedText()}>Store hash</Button></p>
+                    <p><Button type="primary" onClick={() => this.getEntryFromHash()}>Get entry</Button></p>
                     <p>{this.renderStatus()}</p>
                 </Card>
                 {this.renderEntry()}
