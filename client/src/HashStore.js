@@ -7,10 +7,9 @@ import HashStoreContract from "./contracts/HashStore.json";
 
 import {hashSHA256FromUtf8} from './hash';
 
-const FormItem = Form.Item;
 const {TextArea} = Input;
 
-export class _HashStore extends React.Component {
+export class HashStore extends React.Component {
     constructor() {
         super();
         this.state = {};
@@ -110,5 +109,3 @@ export class _HashStore extends React.Component {
         )
     }
 }
-
-export const HashStore = Form.create()(_HashStore);
