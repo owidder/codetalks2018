@@ -11,20 +11,34 @@ const {TextArea} = Input;
 export class _HashStore extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            stackId: null,
-            hashedText: null,
-            sourceKey: null,
-            blockNumberKey: null,
-            blockTimestampKey: null,
-        };
+        this.state = {};
+    }
+
+    componentDidMount() {
+        const {drizzle} = this.props;
+
+        this.unsubscribe = drizzle.store.subscribe(() => {
+
+            const drizzleState = drizzle.store.getState();
+
+            console.log(drizzleState);
+
+            if (drizzleState.drizzleStatus.initialized) {
+                this.setState({loaded: true, drizzleState});
+            }
+        });
+    }
+
+    compomentWillUnmount() {
+        this.unsubscribe();
     }
 
     storeHashedText(evt) {
         evt.preventDefault();
         this.props.form.validateFields(async (err, values) => {
             if (!err) {
-                const {drizzle, drizzleState} = this.props;
+                const {drizzle} = this.props;
+                const {drizzleState} = this.state;
                 const contract = drizzle.contracts.HashStore;
 
                 const hashedText = await hashSHA256FromUtf8(values.text);
@@ -42,7 +56,8 @@ export class _HashStore extends React.Component {
         evt.preventDefault();
         this.props.form.validateFields(async (err, values) => {
             if (!err) {
-                const contract = this.props.drizzle.contracts.HashStore;
+                const {drizzle} = this.props;
+                const contract = drizzle.contracts.HashStore;
 
                 const hashedText = await hashSHA256FromUtf8(values.text);
 
@@ -56,7 +71,8 @@ export class _HashStore extends React.Component {
     }
 
     getTxStatus() {
-        const {transactions, transactionStack} = this.props.drizzleState;
+        const {drizzleState} = this.state;
+        const {transactions, transactionStack} = drizzleState;
         const txHash = transactionStack[this.state.stackId];
 
         if (!txHash) return null;
@@ -79,7 +95,10 @@ export class _HashStore extends React.Component {
     }
 
     render() {
-        const contract = this.props.drizzleState.contracts.HashStore;
+        if (!this.state.loaded) return "Loading Drizzle...";
+
+        const {drizzleState} = this.state;
+        const contract = drizzleState.contracts.HashStore;
         const source = contract.getSourceFromHash[this.state.sourceKey];
         const blockNumber = contract.getBlockNumberFromHash[this.state.blockNumberKey];
         const blockTimestamp = contract.getBlockTimestampFromHash[this.state.blockTimestampKey];

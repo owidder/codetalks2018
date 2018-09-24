@@ -1,14 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
-import App from "./App";
+import {HashStore} from "./HashStore";
 
 import {Drizzle, generateStore} from "drizzle";
-import HashStore from "./contracts/HashStore.json";
+import HashStoreContract from "./contracts/HashStore.json";
 
-const options = {contracts: [HashStore]};
+const options = {contracts: [HashStoreContract]};
 
 const drizzleStore = generateStore(options);
 const drizzle = new Drizzle(options, drizzleStore);
 
-ReactDOM.render(<App drizzle={drizzle} />, document.getElementById("root"));
+ReactDOM.render(<HashStore drizzle={drizzle} />, document.getElementById("root"));
