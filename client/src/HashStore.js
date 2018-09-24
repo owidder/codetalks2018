@@ -99,13 +99,8 @@ export class _HashStore extends React.Component {
 
         return (
             <div className="hashstore">
-                <Form>
-                    <FormItem label="Some text">
-                        {this.props.form.getFieldDecorator('text', {rules: [{required: true, message: 'Input some text',}],
-                        })(<TextArea ref={(comp) => this.textArea = comp} placeholder="Some text" autosize/>)}
-                    </FormItem>
-                </Form>
                 <Card>
+                    <p><TextArea ref={(comp) => this.textArea = comp} placeholder="Some text" autosize/></p>
                     <p><Button type="primary" onClick={() => this.storeHashedText()}>Store hash</Button></p>
                     <p><Button type="primary" onClick={() => this.getEntryFromHash()}>Get entry</Button></p>
                     <p>{this.renderStatus()}</p>
