@@ -36,11 +36,11 @@ export class HashStore extends React.Component {
         const contract = this.drizzle.contracts.HashStore;
         const hashedText = await hashSHA256FromUtf8(this.text);
 
-        const stackId = contract.methods["storeHash"].cacheSend(hashedText, {
+        const txKey = contract.methods["storeHash"].cacheSend(hashedText, {
             from: this.state.drizzleState.accounts[0]
         });
 
-        this.setState({stackId, hashedText});
+        this.setState({txKey, hashedText});
 
     };
 
@@ -58,9 +58,8 @@ export class HashStore extends React.Component {
     }
 
     renderTxStatus() {
-        const {drizzleState} = this.state;
-        const {transactions, transactionStack} = drizzleState;
-        const txHash = transactionStack[this.state.stackId];
+        const {transactions, transactionStack} = this.state.drizzleState;
+        const txHash = transactionStack[this.state.txKey];
 
         if (!txHash) return null;
 
