@@ -17,11 +17,9 @@ export class HashStore extends React.Component {
 
     componentDidMount() {
         const options = {contracts: [HashStoreContract]};
-        const drizzleStore = generateStore(options);
-        this.drizzle = new Drizzle(options, drizzleStore);
+        this.drizzle = new Drizzle(options, generateStore(options));
 
         this.unsubscribe = this.drizzle.store.subscribe(() => {
-
             const drizzleState = this.drizzle.store.getState();
 
             if (drizzleState.drizzleStatus.initialized) {
@@ -34,14 +32,12 @@ export class HashStore extends React.Component {
         this.unsubscribe();
     }
 
-    async storeHashedText(evt) {
-        const {drizzleState} = this.state;
+    async storeHashedText() {
         const contract = this.drizzle.contracts.HashStore;
-
         const hashedText = await hashSHA256FromUtf8(this.text);
 
         const stackId = contract.methods["storeHash"].cacheSend(hashedText, {
-            from: drizzleState.accounts[0]
+            from: this.state.drizzleState.accounts[0]
         });
 
         this.setState({stackId, hashedText});
@@ -85,17 +81,13 @@ export class HashStore extends React.Component {
         </Card>
     }
 
-    textChanged(evt) {
-        this.text = evt.target.value;
-    }
-
     render() {
         if (!this.state.loaded) return "Loading Drizzle...";
 
         return (
             <div className="hashstore">
                 <Card>
-                    <p><TextArea onChange={(e) => this.textChanged(e)} placeholder="Some text" autosize/></p>
+                    <p><TextArea onChange={(evt) => this.text = evt.target.value} placeholder="Some text" autosize/></p>
                     <p><Button type="primary" onClick={() => this.storeHashedText()}>Store hash</Button></p>
                     <p><Button type="primary" onClick={() => this.getEntryFromHash()}>Get entry</Button></p>
                     <p>{this.state.hashedText}</p>
