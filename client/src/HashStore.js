@@ -70,7 +70,7 @@ export class _HashStore extends React.Component {
         })
     }
 
-    getTxStatus() {
+    renderStatus() {
         const {drizzleState} = this.state;
         const {transactions, transactionStack} = drizzleState;
         const txHash = transactionStack[this.state.stackId];
@@ -80,7 +80,13 @@ export class _HashStore extends React.Component {
         return `Transaction status: ${transactions[txHash].status}`;
     };
 
-    renderEntry(source, blockNumber, blockTimestamp) {
+    renderEntry() {
+        const {drizzleState, sourceKey, blockNumberKey, blockTimestampKey} = this.state;
+        const contract = drizzleState.contracts.HashStore;
+        const source = contract.getSourceFromHash[sourceKey];
+        const blockNumber = contract.getBlockNumberFromHash[blockNumberKey];
+        const blockTimestamp = contract.getBlockTimestampFromHash[blockTimestampKey];
+
         if(source && blockNumber && blockTimestamp) {
             const date = new Date(Number(blockTimestamp.value) * 1000);
             return <Card>
@@ -97,12 +103,6 @@ export class _HashStore extends React.Component {
     render() {
         if (!this.state.loaded) return "Loading Drizzle...";
 
-        const {drizzleState} = this.state;
-        const contract = drizzleState.contracts.HashStore;
-        const source = contract.getSourceFromHash[this.state.sourceKey];
-        const blockNumber = contract.getBlockNumberFromHash[this.state.blockNumberKey];
-        const blockTimestamp = contract.getBlockTimestampFromHash[this.state.blockTimestampKey];
-
         return (
             <div className="hashstore">
                 <Form>
@@ -114,9 +114,9 @@ export class _HashStore extends React.Component {
                 <Card>
                     <p><Button type="primary" onClick={(e) => this.storeHashedText(e)}>Store hash</Button></p>
                     <p><Button type="primary" onClick={(e) => this.getEntryFromHash(e)}>Get entry</Button></p>
-                    <p>{this.getTxStatus()}</p>
+                    <p>{this.renderStatus()}</p>
                 </Card>
-                {this.renderEntry(source, blockNumber, blockTimestamp)}
+                {this.renderEntry()}
             </div>
         )
     }
