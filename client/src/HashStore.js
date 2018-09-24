@@ -53,21 +53,20 @@ export class _HashStore extends React.Component {
         })
     };
 
-    getEntryFromHash(evt) {
+    async getEntryFromHash(evt) {
         evt.preventDefault();
-        this.props.form.validateFields(async (err, values) => {
-            if (!err) {
-                const contract = this.drizzle.contracts.HashStore;
 
-                const hashedText = await hashSHA256FromUtf8(values.text);
+        const contract = this.drizzle.contracts.HashStore;
 
-                const sourceKey = contract.methods["getSourceFromHash"].cacheCall(hashedText);
-                const blockNumberKey = contract.methods["getBlockNumberFromHash"].cacheCall(hashedText);
-                const blockTimestampKey = contract.methods["getBlockTimestampFromHash"].cacheCall(hashedText);
+        const text = this.textArea.props.value;
+        const hashedText = await hashSHA256FromUtf8(text);
 
-                this.setState({sourceKey, blockNumberKey, blockTimestampKey, hashedText});
-            }
-        })
+        const sourceKey = contract.methods["getSourceFromHash"].cacheCall(hashedText);
+        const blockNumberKey = contract.methods["getBlockNumberFromHash"].cacheCall(hashedText);
+        const blockTimestampKey = contract.methods["getBlockTimestampFromHash"].cacheCall(hashedText);
+
+        this.setState({sourceKey, blockNumberKey, blockTimestampKey, hashedText});
+
     }
 
     renderStatus() {
@@ -108,7 +107,7 @@ export class _HashStore extends React.Component {
                 <Form>
                     <FormItem label="Some text">
                         {this.props.form.getFieldDecorator('text', {rules: [{required: true, message: 'Input some text',}],
-                        })(<TextArea placeholder="Some text" autosize/>)}
+                        })(<TextArea ref={(comp) => this.textArea = comp} placeholder="Some text" autosize/>)}
                     </FormItem>
                 </Form>
                 <Card>
