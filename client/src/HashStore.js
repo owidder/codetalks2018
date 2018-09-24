@@ -38,8 +38,7 @@ export class HashStore extends React.Component {
         const {drizzleState} = this.state;
         const contract = this.drizzle.contracts.HashStore;
 
-        const text = this.textArea.props.value;
-        const hashedText = await hashSHA256FromUtf8(text);
+        const hashedText = await hashSHA256FromUtf8(this.text);
 
         const stackId = contract.methods["storeHash"].cacheSend(hashedText, {
             from: drizzleState.accounts[0]
@@ -52,8 +51,7 @@ export class HashStore extends React.Component {
     async getEntryFromHash() {
         const contract = this.drizzle.contracts.HashStore;
 
-        const text = this.textArea.props.value;
-        const hashedText = await hashSHA256FromUtf8(text);
+        const hashedText = await hashSHA256FromUtf8(this.text);
 
         const sourceKey = contract.methods["getSourceFromHash"].cacheCall(hashedText);
         const blockNumberKey = contract.methods["getBlockNumberFromHash"].cacheCall(hashedText);
@@ -63,7 +61,7 @@ export class HashStore extends React.Component {
 
     }
 
-    renderStatus() {
+    renderTxStatus() {
         const {drizzleState} = this.state;
         const {transactions, transactionStack} = drizzleState;
         const txHash = transactionStack[this.state.stackId];
@@ -80,17 +78,15 @@ export class HashStore extends React.Component {
         const blockNumber = contract.getBlockNumberFromHash[blockNumberKey];
         const blockTimestamp = contract.getBlockTimestampFromHash[blockTimestampKey];
 
-        if(source && blockNumber && blockTimestamp) {
-            const date = new Date(Number(blockTimestamp.value) * 1000);
-            return <Card>
-                <p>{this.state.hashedText}</p>
-                <p>Source: {source.value}</p>
-                <p>Block number: {blockNumber.value}</p>
-                <p>Block timestamp: {date.toDateString()}</p>
-            </Card>
-        }
+        return <Card>
+            <p>Source: {source ? source.value : ""}</p>
+            <p>Block number: {blockNumber ? blockNumber.value : ""}</p>
+            <p>Block timestamp: {blockTimestamp ? (new Date(Number(blockTimestamp.value) * 1000)).toDateString() : ""}</p>
+        </Card>
+    }
 
-        return <span></span>
+    textChanged(evt) {
+        this.text = evt.target.value;
     }
 
     render() {
@@ -99,10 +95,11 @@ export class HashStore extends React.Component {
         return (
             <div className="hashstore">
                 <Card>
-                    <p><TextArea ref={(comp) => this.textArea = comp} placeholder="Some text" autosize/></p>
+                    <p><TextArea onChange={(e) => this.textChanged(e)} placeholder="Some text" autosize/></p>
                     <p><Button type="primary" onClick={() => this.storeHashedText()}>Store hash</Button></p>
                     <p><Button type="primary" onClick={() => this.getEntryFromHash()}>Get entry</Button></p>
-                    <p>{this.renderStatus()}</p>
+                    <p>{this.state.hashedText}</p>
+                    <p>{this.renderTxStatus()}</p>
                 </Card>
                 {this.renderEntry()}
             </div>
