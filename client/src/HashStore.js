@@ -2,6 +2,8 @@ import React from "react";
 import {Form, Input, Button, Card} from 'antd';
 import 'antd/dist/antd.css';
 import './HashStore.css';
+import {Drizzle, generateStore} from "drizzle";
+import HashStoreContract from "./contracts/HashStore.json";
 
 import {hashSHA256FromUtf8} from './hash';
 
@@ -9,19 +11,19 @@ const FormItem = Form.Item;
 const {TextArea} = Input;
 
 export class _HashStore extends React.Component {
-    constructor(props) {
-        super(props);
+    constructor() {
+        super();
         this.state = {};
     }
 
     componentDidMount() {
-        const {drizzle} = this.props;
+        const options = {contracts: [HashStoreContract]};
+        const drizzleStore = generateStore(options);
+        this.drizzle = new Drizzle(options, drizzleStore);
 
-        this.unsubscribe = drizzle.store.subscribe(() => {
+        this.unsubscribe = this.drizzle.store.subscribe(() => {
 
-            const drizzleState = drizzle.store.getState();
-
-            console.log(drizzleState);
+            const drizzleState = this.drizzle.store.getState();
 
             if (drizzleState.drizzleStatus.initialized) {
                 this.setState({loaded: true, drizzleState});
@@ -37,9 +39,8 @@ export class _HashStore extends React.Component {
         evt.preventDefault();
         this.props.form.validateFields(async (err, values) => {
             if (!err) {
-                const {drizzle} = this.props;
                 const {drizzleState} = this.state;
-                const contract = drizzle.contracts.HashStore;
+                const contract = this.drizzle.contracts.HashStore;
 
                 const hashedText = await hashSHA256FromUtf8(values.text);
 
@@ -56,8 +57,7 @@ export class _HashStore extends React.Component {
         evt.preventDefault();
         this.props.form.validateFields(async (err, values) => {
             if (!err) {
-                const {drizzle} = this.props;
-                const contract = drizzle.contracts.HashStore;
+                const contract = this.drizzle.contracts.HashStore;
 
                 const hashedText = await hashSHA256FromUtf8(values.text);
 
