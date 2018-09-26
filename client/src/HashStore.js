@@ -1,5 +1,5 @@
 import React from "react";
-import {Form, Input, Button, Card} from 'antd';
+import {Input, Button, Card} from 'antd';
 import 'antd/dist/antd.css';
 import './HashStore.css';
 import {Drizzle, generateStore} from "drizzle";
@@ -81,7 +81,7 @@ export class HashStore extends React.Component {
     }
 
     render() {
-        if (!this.state.loaded) return "Loading Drizzle...";
+        if (!this.state.loaded) return "Loading...";
 
         return (
             <div className="hashstore">
