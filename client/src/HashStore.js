@@ -4,10 +4,15 @@ import 'antd/dist/antd.css';
 import './HashStore.css';
 import {Drizzle, generateStore} from "drizzle";
 import HashStoreContract from "./contracts/HashStore.json";
+import HashStoreContractInfura from "./contracts-infura/HashStore.json";
 
 import {hashSHA256FromUtf8} from './hash';
 
 const {TextArea} = Input;
+
+const isInfura = () => {
+    return window.location.search.indexOf("develop=1") < 0;
+}
 
 export class HashStore extends React.Component {
     constructor() {
@@ -16,7 +21,7 @@ export class HashStore extends React.Component {
     }
 
     componentDidMount() {
-        const options = {contracts: [HashStoreContract]};
+        const options = {contracts: [isInfura() ? HashStoreContractInfura : HashStoreContract]};
         this.drizzle = new Drizzle(options, generateStore(options));
 
         this.unsubscribe = this.drizzle.store.subscribe(() => {
@@ -54,7 +59,6 @@ export class HashStore extends React.Component {
         const blockTimestampKey = contract.methods["getBlockTimestampFromHash"].cacheCall(hashedText);
 
         this.setState({sourceKey, blockNumberKey, blockTimestampKey, hashedText});
-
     }
 
     renderTxStatus() {

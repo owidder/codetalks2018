@@ -9,8 +9,9 @@
     "react-dom": "^16.5.1",
     "react-scripts": "1.1.5"
   },
+  "homepage": "https://owidder.github.io/codetalks2018/client/build",
   "scripts": {
-    "start": "react-scripts start",
+    "start": "PORT=3006 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
